@@ -132,49 +132,77 @@ printGrid grid = putStrLn $ unlines $ map showRow grid
         showRow row = unwords $ map show row
 
 
+getQtNum :: Board -> Int -> Int
+getQtNum board n = length (filter (== n) (concat board))
 
-loop :: Board -> IO()
-loop board = do
+else0 :: Int -> Int
+else0 x = if x < 0 then 0 else x
+
+getPoints :: Board -> Board -> Int
+getPoints b0 b1 = 
+    sum $ map 
+        (\n -> else0 (((getQtNum b0 n) - (getQtNum b1 n)) * n))
+        (take 50 [2^x | x <- [1..]])
+    
+
+
+loop :: Board -> Int -> IO()
+loop board points = do
+    putStrLn (show points)
     printGrid board
     input <- getChar
-
+    
 
     if input == 'u' then do
+        putStrLn "up"
         let m = up board
-        if board == m then 
-            loop board 
+        if board == m then do
+            putStrLn "Move didn't make changes."
+            loop board points
         else do
+            let p = getPoints board m
             b0 <- addRandom m
-            loop b0
+            loop b0 (points + p)
     else if input == 'r' then do
+        putStrLn "right"
         let m = right board
-        if board == m then 
-            loop board 
+        if board == m then do
+            putStrLn "Move didn't make changes."
+            loop board points
         else do
+            let p = getPoints board m
             b0 <- addRandom m
-            loop b0
+            loop b0 (points + p)
     else if input == 'd' then do
+        putStrLn "down"
         let m = down board
-        if board == m then 
-            loop board 
+        if board == m then do
+            putStrLn "Move didn't make changes."
+            loop board points
         else do
+            let p = getPoints board m
             b0 <- addRandom m
-            loop b0
+            loop b0 (points + p)
     else if input == 'l' then do
+        putStrLn "left"
         let m = left board
-        if board == m then 
-            loop board 
+        if board == m then do
+            putStrLn "Move didn't make changes."
+            loop board points
         else do
+            let p = getPoints board m
             b0 <- addRandom m
-            loop b0
-    else if input == 'x' then
+            loop b0 (points + p)
+    else if input == 'x' then do
+        putStrLn "Exiting."
         printGrid board
     else 
-        loop board
+        loop board points
 
 
 
 main :: IO()
 main = do
+    putStrLn "Controls:\nu: up\nr: right\nd: down\nl: left\nx: exit\n"
     b <- start
-    loop b
+    loop b 0

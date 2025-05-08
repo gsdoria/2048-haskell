@@ -11,7 +11,7 @@ Change size of board by altering global variables "width" and "height".
 - x: end game
 
 # TODO
-- Point system
+- ~~Point system~~
 - Victory and defeat conditions
 - Undo move
 - Restart
